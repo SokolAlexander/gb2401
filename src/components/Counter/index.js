@@ -1,9 +1,6 @@
 import { useState } from "react";
 
 export const Counter = () => {
-  // const countState = useState(0);
-  // const count = countState[0];
-  // const setCount = countState[1];
   const [count, setCount] = useState(0);
 
   return (
