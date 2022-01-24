@@ -1,7 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { Message } from "./components/Message";
+import { Counter } from "./components/Counter";
+
+const myText = "Hello from app!!!";
 
 function App() {
+  const handleMessageClick = () => {
+    console.log("hello!!!");
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -17,6 +25,12 @@ function App() {
         >
           Learn React
         </a>
+        <Message
+          myString="my string"
+          text={myText}
+          onMessageClick={handleMessageClick}
+        />
+        <Counter />
       </header>
     </div>
   );
