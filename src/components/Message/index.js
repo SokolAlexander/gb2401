@@ -1,15 +1,31 @@
 import React from "react";
+import PropTypes from "prop-types";
 import "./styles.css";
 
-// export const Message = ({ text, myString, onMessageClick }) => {
-//   return (
-//     <h3 className="header" onClick={onMessageClick}>Message Text, {text}</h3>
-//   );
-// };
+export const Message = ({ text, author }) => {
+  return (
+    <div>
+      <span>
+        {author}: {text}
+      </span>
+    </div>
+  );
+};
 
-export class Message extends React.Component {
-  render() {
-    const { text, onMessageClick } = this.props;
-    return <span onClick={onMessageClick}>Message Text, {text}</span>;
-  }
-}
+Message.propTypes = {
+  text: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number]),
+  author: PropTypes.string.isRequired,
+};
+
+// export class Message extends React.Component {
+//   render() {
+//     const { text, author } = this.props;
+//     return (
+//       <div>
+//         <span>
+//           {author}: {text}
+//         </span>
+//       </div>
+//     );
+//   }
+// }
