@@ -1,4 +1,5 @@
 import { List, ListItem } from "@mui/material";
+import { Link, Outlet } from "react-router-dom";
 
 const chats = [
   {
@@ -16,9 +17,14 @@ const chats = [
 ];
 
 export const ChatList = () => (
-  <List>
-    {chats.map((chat) => (
-      <ListItem key={chat.id}>{chat.name}</ListItem>
-    ))}
-  </List>
+  <>
+    <List>
+      {chats.map((chat) => (
+        <ListItem key={chat.id}>
+          <Link to={`/chats/${chat.id}`}>{chat.name}</Link>
+        </ListItem>
+      ))}
+    </List>
+    <Outlet />
+  </>
 );
