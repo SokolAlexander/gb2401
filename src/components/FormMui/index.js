@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import "./styles.css";
+import { ThemeContext } from "../../utils/ThemeContext";
 
-export const FormMui = ({ onSubmit }) => {
+export const FormMui = ({ onSubmit, messageColor }) => {
   const [value, setValue] = useState("");
 
   const handleChange = (e) => {
@@ -20,7 +21,18 @@ export const FormMui = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit}>
       <TextField value={value} onChange={handleChange} />
-      <Button variant="contained">Send</Button>
+      <Button variant="contained">
+        <span style={{ color: messageColor }}>Send</span>
+      </Button>
     </form>
   );
 };
+
+const withContext = (Component) => {
+  return (props) => {
+    const { messageColor } = useContext(ThemeContext);
+    return <Component messageColor={messageColor} {...props} />;
+  };
+};
+
+export const FormWithLogger = withContext(FormMui);
