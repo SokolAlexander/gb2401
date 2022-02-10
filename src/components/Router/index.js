@@ -1,15 +1,76 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Routes, Route, Link, NavLink } from "react-router-dom";
 import App from "../../App";
+import { addChat, deleteChat } from "../../store/chats/actions";
 import { ThemeContext } from "../../utils/ThemeContext";
 import { Chat } from "../Chat";
 import { ChatList } from "../ChatList";
-import { Profile } from "../Profile";
+import ConnectedProfile, { Profile } from "../Profile";
 
 const Home = () => <h2>Home page</h2>;
 
+const inititalChats = [
+  {
+    name: "Chat 1",
+    id: "chat1",
+  },
+  {
+    name: "Chat 2",
+    id: "chat2",
+  },
+  {
+    name: "Chat 3",
+    id: "chat3",
+  },
+];
+
+const initialMessages = inititalChats.reduce((acc, el) => {
+  acc[el.id] = [];
+  return acc;
+}, {});
+
 export const Router = () => {
   const [messageColor, setMessageColor] = useState("red");
+  // const [chatList, setChatList] = useState(inititalChats);
+  const [messages, setMessages] = useState(initialMessages);
+
+  const chatList = useSelector((state) => {
+    console.log(state);
+    return state.chats
+  });
+  const dispatch = useDispatch();
+
+  const handleAddMessage = (chatId, newMsg) => {
+    setMessages((prevMessageList) => ({
+      ...prevMessageList,
+      [chatId]: [...prevMessageList[chatId], newMsg],
+    }));
+  };
+
+  const handleAddChat = (newChatName) => {
+    const newId = `chat-${Date.now()}`;
+
+    dispatch(addChat(newId, newChatName));
+    // setChatList((prevChatList) => [...prevChatList, newChat]);
+    setMessages((prevMessages) => ({
+      ...prevMessages,
+      [newId]: [],
+    }));
+  };
+
+  const handleDeleteChat = (idToDelete) => {
+    dispatch(deleteChat(idToDelete));
+    // setChatList((prevChatList) =>
+    //   prevChatList.filter((chat) => chat.id !== idToDelete)
+    // );
+    setMessages((prevMessages) => {
+      const newMsgs = { ...prevMessages };
+
+      delete newMsgs[idToDelete];
+      return newMsgs;
+    });
+  };
 
   const contextValue = {
     messageColor,
@@ -45,11 +106,25 @@ export const Router = () => {
         </div>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="chats" element={<ChatList />}>
-            <Route path=":chatId" element={<Chat />} />
+          <Route path="/profile" element={<ConnectedProfile />} />
+          <Route
+            path="chats"
+            element={
+              <ChatList
+                onDeleteChat={handleDeleteChat}
+                onAddChat={handleAddChat}
+                chats={chatList}
+              />
+            }
+          >
+            <Route
+              path=":chatId"
+              element={
+                <Chat messages={messages} addMessage={handleAddMessage} />
+              }
+            />
           </Route>
-          <Route element={<h2>404</h2>} />
+          <Route path="*" element={<h2>404</h2>} />
         </Routes>
       </BrowserRouter>
     </ThemeContext.Provider>

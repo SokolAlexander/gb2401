@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import "./styles.css";
 import { ThemeContext } from "../../utils/ThemeContext";
 
-export const FormMui = ({ onSubmit, messageColor }) => {
+export const FormMui = ({ onSubmit }) => {
   const [value, setValue] = useState("");
 
   const handleChange = (e) => {
@@ -22,7 +22,7 @@ export const FormMui = ({ onSubmit, messageColor }) => {
     <form onSubmit={handleSubmit}>
       <TextField value={value} onChange={handleChange} />
       <Button variant="contained">
-        <span style={{ color: messageColor }}>Send</span>
+        <span>Send</span>
       </Button>
     </form>
   );

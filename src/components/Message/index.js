@@ -14,10 +14,10 @@ export const Message = ({ text, author }) => {
   );
 };
 
-Message.propTypes = {
-  text: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number]),
-  author: PropTypes.string.isRequired,
-};
+// Message.propTypes = {
+//   text: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.number]),
+//   author: PropTypes.string.isRequired,
+// };
 
 // export class Message extends React.Component {
 //   render() {

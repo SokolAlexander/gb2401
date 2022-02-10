@@ -1,21 +1,7 @@
-import { StackedLineChartSharp } from "@mui/icons-material";
 import { List, ListItem } from "@mui/material";
 import { Link, Outlet } from "react-router-dom";
-
-const chats = [
-  {
-    name: "Chat 1",
-    id: "chat1",
-  },
-  {
-    name: "Chat 2",
-    id: "chat2",
-  },
-  {
-    name: "Chat 3",
-    id: "chat3",
-  },
-];
+import { FormMui } from "../FormMui";
+import { ChatItem } from "./ChatItem";
 
 // const handleDeleteChat = (idToDelete) => {
 //   const newChats = chats.filter(chat => chat.id !== idToDelete);
@@ -25,16 +11,14 @@ const chats = [
 //   setMessageList(newMessageList)
 // }
 
-export const ChatList = () => (
+export const ChatList = ({ chats, onAddChat, onDeleteChat }) => (
   <>
     <List>
       {chats.map((chat) => (
-        <ListItem key={chat.id}>
-          <Link to={`/chats/${chat.id}`}>{chat.name}</Link>
-          {/* <div onClick={() => deleteChat(chat.id)} /> */}
-        </ListItem>
+        <ChatItem chat={chat} onDeleteChat={onDeleteChat} />
       ))}
     </List>
+    <FormMui onSubmit={onAddChat} />
     <Outlet />
   </>
 );

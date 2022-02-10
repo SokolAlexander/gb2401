@@ -7,21 +7,10 @@ import { Navigate, useNavigate, useParams } from "react-router";
 
 import "../../App.css";
 
-const chats = [{ id: "chat1" }];
-const messages = {
-  chat1: [],
-};
-
-export function Chat({ messageColor }) {
+export function Chat({ messages, addMessage }) {
   const params = useParams();
-  const navigate = useNavigate();
   const { chatId } = params;
 
-  const [messageList, setMessageList] = useState({
-    chat1: [],
-    chat2: [],
-    chat3: [],
-  });
   const messagesEnd = useRef();
 
   const handleAddMessage = (text) => {
@@ -34,10 +23,7 @@ export function Chat({ messageColor }) {
       author,
       id: `msg-${Date.now()}`,
     };
-    setMessageList((prevMessageList) => ({
-      ...prevMessageList,
-      [chatId]: [...prevMessageList[chatId], newMsg],
-    }));
+    addMessage(chatId, newMsg);
   };
 
   useEffect(() => {
@@ -45,7 +31,7 @@ export function Chat({ messageColor }) {
 
     let timeout;
     if (
-      messageList[chatId]?.[messageList[chatId]?.length - 1]?.author ===
+      messages[chatId]?.[messages[chatId]?.length - 1]?.author ===
       AUTHORS.ME
     ) {
       timeout = setTimeout(() => {
@@ -54,18 +40,17 @@ export function Chat({ messageColor }) {
     }
 
     return () => clearTimeout(timeout);
-  }, [messageList]);
+  }, [messages]);
 
-  if (!messageList[chatId]) {
+  if (!messages[chatId]) {
     return <Navigate to="/chats" replace />;
   }
 
   return (
     <div className="App">
-      {/* <ChatList /> */}
       <div>
         <div className="App-content">
-          <MessageList messages={messageList[chatId]} />
+          <MessageList messages={messages[chatId]} />
         </div>
         <FormWithLogger messageColor="yellow" onSubmit={handleAddMessage} />
       </div>
