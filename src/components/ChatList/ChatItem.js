@@ -6,6 +6,6 @@ import { DeleteButton } from "./DeleteButton";
 export const ChatItem = ({ chat, onDeleteChat }) => (
   <ListItem key={chat.id}>
     <Link to={`/chats/${chat.id}`}>{chat.name}</Link>
-    <DeleteButton id={chat.id} onClick={onDeleteChat} />
+    <DeleteButton id={chat.id} />
   </ListItem>
 );

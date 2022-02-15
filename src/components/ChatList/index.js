@@ -1,24 +1,30 @@
-import { List, ListItem } from "@mui/material";
-import { Link, Outlet } from "react-router-dom";
+import { List } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet } from "react-router-dom";
+
+import { addChat } from "../../store/chats/actions";
+import { selectChats } from "../../store/chats/selectors";
 import { FormMui } from "../FormMui";
 import { ChatItem } from "./ChatItem";
 
-// const handleDeleteChat = (idToDelete) => {
-//   const newChats = chats.filter(chat => chat.id !== idToDelete);
-//   setChats(newChats);
-//   const newMessageList = { ...messageList };
-//   delete messageList[idToDelete];
-//   setMessageList(newMessageList)
-// }
+export const ChatList = () => {
+  const chats = useSelector(selectChats);
+  const dispatch = useDispatch();
 
-export const ChatList = ({ chats, onAddChat, onDeleteChat }) => (
-  <>
-    <List>
-      {chats.map((chat) => (
-        <ChatItem chat={chat} onDeleteChat={onDeleteChat} />
-      ))}
-    </List>
-    <FormMui onSubmit={onAddChat} />
-    <Outlet />
-  </>
-);
+  const handleAddChat = (newChatName) => {
+    const newId = `chat-${Date.now()}`;
+    dispatch(addChat(newId, newChatName));
+  };
+
+  return (
+    <>
+      <List>
+        {chats.map((chat) => (
+          <ChatItem key={chat.id} chat={chat} />
+        ))}
+      </List>
+      <FormMui onSubmit={handleAddChat} />
+      <Outlet />
+    </>
+  );
+};

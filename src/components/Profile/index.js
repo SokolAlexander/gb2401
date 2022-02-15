@@ -7,6 +7,7 @@ import {
 } from "../../store/profile/actions";
 import { selectName, selectShowName } from "../../store/profile/selectors";
 import { ThemeContext } from "../../utils/ThemeContext";
+import { usePrev } from "../../utils/usePrev";
 import { Form } from "../Form";
 
 export const Profile = () => {
@@ -56,6 +57,10 @@ export const ProfileToConnect = ({ showName, name, setName, setShowName }) => {
   const handleClick = () => {
     setMessageColor((prevColor) => (prevColor === "red" ? "blue" : "red"));
   };
+
+  const prevShowName = usePrev(showName);
+
+  console.log(prevShowName, showName);
 
   const handleChangeName = (text) => {
     // dispatch(changeName(text));
