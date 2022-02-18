@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
+import { logout } from "../../services/firebase";
 import {
   changeShowName,
   CHANGE_NAME,
@@ -67,9 +68,20 @@ export const ProfileToConnect = ({ showName, name, setName, setShowName }) => {
     setName(text);
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
   return (
     <>
       <h3>Profile</h3>
+      <div>
+        <button onClick={handleLogout}>LOGOUT</button>
+      </div>
       <div>
         <button onClick={handleClick}>Change theme</button>
       </div>
