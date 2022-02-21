@@ -1,19 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import { AUTHORS } from "../../utils/constants";
-import { MessageList } from "../MessageList";
-import { FormMui, FormWithLogger } from "../FormMui";
-import { ChatList } from "../ChatList";
-import { Navigate, useNavigate, useParams } from "react-router";
+import React, { useEffect, useRef, useState } from "react";
+import { Navigate, useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 
 import "../../App.css";
-import { useDispatch, useSelector } from "react-redux";
+import { AUTHORS } from "../../utils/constants";
+import { MessageList } from "../MessageList";
+import { FormWithLogger } from "../FormMui";
 import { selectMessages } from "../../store/messages/selectors";
-import { addMessage, addMessageWithThunk } from "../../store/messages/actions";
+import { addMessageWithThunk } from "../../store/messages/actions";
+import {
+  onChildAdded,
+  onChildRemoved,
+  onValue,
+  push,
+  set,
+} from "@firebase/database";
+import {
+  getMessageListRefByChatId,
+  getMessageRefById,
+  getMessagesRefByChatId,
+} from "../../services/firebase";
 
 export function Chat() {
   const { chatId } = useParams();
 
-  const messages = useSelector(selectMessages);
+  // const messages = useSelector(selectMessages);
+  const [messages, setMessages] = useState([]);
   const dispatch = useDispatch();
 
   const messagesEnd = useRef();
@@ -28,14 +40,50 @@ export function Chat() {
       author,
       id: `msg-${Date.now()}`,
     };
-    dispatch(addMessageWithThunk(chatId, newMsg));
+    // dispatch(addMessageWithThunk(chatId, newMsg));
+    set(getMessageRefById(chatId, newMsg.id), newMsg);
   };
+  useEffect(() => {
+    const unsubscribe = onValue(getMessagesRefByChatId(chatId), (snapshot) => {
+      if (!snapshot.val()?.empty) {
+        setMessages(null);
+      }
+    });
+
+    return unsubscribe;
+  }, [chatId]);
+
+  useEffect(() => {
+    const unsubscribe = onChildAdded(
+      getMessageListRefByChatId(chatId),
+      (snapshot) => {
+        console.log(snapshot.val());
+        setMessages((prevMessages) => [...prevMessages, snapshot.val()]);
+      }
+    );
+
+    return unsubscribe;
+  }, [chatId]);
+
+  useEffect(() => {
+    const unsubscribe = onChildRemoved(
+      getMessageListRefByChatId(chatId),
+      (snapshot) => {
+        console.log(snapshot.val());
+        setMessages((prevMessages) =>
+          prevMessages.filter(({ id }) => id !== snapshot.val()?.id)
+        );
+      }
+    );
+
+    return unsubscribe;
+  }, [chatId]);
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView();
   }, [messages]);
 
-  if (!messages[chatId]) {
+  if (!messages) {
     return <Navigate to="/chats" replace />;
   }
 
@@ -43,7 +91,7 @@ export function Chat() {
     <div className="App">
       <div>
         <div className="App-content">
-          <MessageList messages={messages[chatId]} />
+          <MessageList messages={messages} />
         </div>
         <FormWithLogger messageColor="yellow" onSubmit={handleAddMessage} />
       </div>
@@ -51,11 +99,32 @@ export function Chat() {
   );
 }
 
-// function middleware(store) {
-//   return function (next) {
-//     return function (action) {
-//       // ....
-//       return next(action);
-//     };
-//   };
-// }
+// onValue(msgsRef, (snapshot) => {
+//   const newMsgs = {};
+
+//   snapshot.forEach((chatMsgsSnap) => {
+//     newMsgs[chatMsgsSnap.key] = Object.values(
+//       chatMsgsSnap.val().messageList || {}
+//     );
+//   });
+
+//   dispatch(setMsgs(newMsgs));
+// });
+
+// onValue(chatsRef, (snapshot) => {
+//   const newChats = [];
+
+//   snapshot?.forEach((chat) => {
+//     newChats.push(chat.val());
+//   });
+
+//   dispatch(setChats(newChats));
+// });
+
+// const newId = `chat${Date.now()}`;
+// const newChat = {
+//   id: newId,
+//   name: newChatName,
+// };
+// set(getChatRefById(newId), newChat);
+// set(getMsgsRefById(newId), { empty: true });

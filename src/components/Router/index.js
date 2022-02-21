@@ -15,9 +15,7 @@ import { auth } from "../../services/firebase";
 export const Router = () => {
   const [messageColor, setMessageColor] = useState("red");
   const [authed, setAuthed] = useState(false);
-  const authorize = () => {
-    setAuthed(true);
-  };
+
   const unauthorize = () => {
     setAuthed(false);
   };
@@ -85,10 +83,10 @@ export const Router = () => {
               element={<ConnectedProfile onLogout={unauthorize} />}
             />
           </Route>
-          <Route path="/articles" element={<Articles />} />
           <Route path="chats" element={<ChatList />}>
             <Route path=":chatId" element={<Chat />} />
           </Route>
+          <Route path="/articles" element={<Articles />} />
           <Route path="*" element={<h2>404</h2>} />
         </Routes>
       </BrowserRouter>

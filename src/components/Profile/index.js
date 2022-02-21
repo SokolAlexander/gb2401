@@ -1,6 +1,13 @@
-import { useContext } from "react";
+import { onValue, set } from "@firebase/database";
+import { useContext, useEffect, useState } from "react";
 import { connect, useDispatch, useSelector, shallowEqual } from "react-redux";
-import { logout } from "../../services/firebase";
+import {
+  auth,
+  getProfileNameRef,
+  logout,
+  // profileNameRef,
+  profileShowNameRef,
+} from "../../services/firebase";
 import {
   changeShowName,
   CHANGE_NAME,
@@ -47,26 +54,41 @@ export const Profile = () => {
   );
 };
 
-export const ProfileToConnect = ({ showName, name, setName, setShowName }) => {
+export const ProfileToConnect = () => {
   const { setMessageColor } = useContext(ThemeContext);
+  const [name, setName] = useState("");
+  const [showName, setShowName] = useState(false);
 
   const handleChangeShowName = () => {
     // dispatch(changeShowName);
-    setShowName();
+    // setShowName();
+    set(profileShowNameRef, !showName);
   };
 
   const handleClick = () => {
     setMessageColor((prevColor) => (prevColor === "red" ? "blue" : "red"));
   };
 
-  const prevShowName = usePrev(showName);
-
-  console.log(prevShowName, showName);
-
   const handleChangeName = (text) => {
     // dispatch(changeName(text));
-    setName(text);
+    // setName(text);
+    console.log(auth.currentUser);
+    set(getProfileNameRef(auth.currentUser.uid), text);
   };
+
+  // useEffect(() => {
+  //   const unsubscribeName = onValue(profileNameRef, (snapshot) => {
+  //     setName(snapshot.val());
+  //   });
+  //   const unsubscribeShowName = onValue(profileShowNameRef, (snapshot) => {
+  //     setShowName(snapshot.val());
+  //   });
+
+  //   return () => {
+  //     unsubscribeName();
+  //     unsubscribeShowName();
+  //   };
+  // }, []);
 
   const handleLogout = async () => {
     try {
@@ -86,7 +108,7 @@ export const ProfileToConnect = ({ showName, name, setName, setShowName }) => {
         <button onClick={handleClick}>Change theme</button>
       </div>
       <div>
-        {showName && <span>{name}</span>}
+        {showName && <h4>{name}</h4>}
         <input type="checkbox" />
         <button onClick={handleChangeShowName}>Change show name</button>
       </div>
